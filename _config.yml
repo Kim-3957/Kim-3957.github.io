@@ -27,9 +27,7 @@ title:                 Kim's Kitchen
 # A short description (~150 chars) of the page used for the meta description tag.
 # Can use markdown, but no more than one paragraph (enforced by `>`)
 description:           >
-What is truth? 
-
-
+What is truth
 # A shorter description for the sidebar.
 tagline:               >
 Safety
