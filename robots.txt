@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: http://Kim-3957.github.io.github.io/sitemap.xml
