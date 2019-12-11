@@ -2,12 +2,13 @@
 title: "Jekyll Github 블로그에 MathJax로 수학식 표시하기"  
 excerpt: "설정 순서등등"  
 categories:  
-  - Kalman filter  
+  - Kalman
 tags:  
   - Blog  
   - MathJax  
   - Jekyll  
   - LaTeX
+  - Kalman
 use_math: true
 ---
 # 수학식 표기의 예

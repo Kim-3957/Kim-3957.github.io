@@ -1,7 +1,4 @@
 ---
-
 layout: category
-
-title: Kalman filter
-
+title: Kalman
 ---
