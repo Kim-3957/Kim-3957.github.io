@@ -2,17 +2,23 @@
 # Must be the same as `author` in `_config.yml`.
 # Change `author1` to your shortname.
 author1:
-  name:              <firstname> <lastname>
-  email:             <mail@domain.tld>
+  name:              <Eugene> <Kim>
+  email:             <kim.eugene@a.mbox.nagoya-u.ac.jp>
 
   # Used at the bottom of each page and at the top of the `about` layout
   # Markdown enabled, can use multiple paragraphs (enabled by `|`)
   about:             |
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+    [Current]
+    * ph.D student
+    * Mechanical Systems Engineering (MSE)
+    * Nagoya University ([NU](http://en.nagoya-u.ac.jp/))
+    * Academy for Safety Intelligence (ASI)([ASI(http://www.mech.nagoya-u.ac.jp/asi/ja/))
+    * Research Interest: Autonomous manufacturing, Safety related system, Digital signal processing
 
-    Open `_data/authors.yml` to edit this text.
+    [Previous]
+    * 2012.04 ~ 2016.03 : Nagoya institute of technology (Mechanical engineering, undergraduate course)
+    * 2016.04 ~ 2018.03 : Nagoya university (master course)
+    * 2018.04 ~ current : Nagoya university (ph.D course) 
 
   # This photo will be used in the about section
   picture:
