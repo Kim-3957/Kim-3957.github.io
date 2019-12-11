@@ -16,7 +16,7 @@ use_math: true
 This formula $f(x) = x^2$ is an example.  
 > $f(x) = x^2$
 
-Latex를 이용하기 때문에 평범한 Lates의 사용법이랑 작성법은 다른것이 없다.
+Latex를 이용하기 때문에 평범한 Latex의 사용법이랑 작성법은 다른것이 없다.
 
 # Jekyll Github 블로그에 MathJax로 수학식 표시하기
 
