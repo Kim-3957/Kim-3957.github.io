@@ -22,10 +22,10 @@ author1:
 
   # This photo will be used in the about section
   picture:
-    path:            https://github.com/account
+    path:            https://avatars1.githubusercontent.com/u/55570572?s=400&u=2eac80fed7bc73eceda4e93f56208f5cdc9a165a&v=4
     # srcset is optional, but can be used to provide higher res versions for retina displays
     srcset:
-      1x:            https://placehold.it/128x128
+      1x:            https://github.com/account
       2x:            https://placehold.it/256x256
 
   # Social media icons in sidebar
