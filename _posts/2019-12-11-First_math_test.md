@@ -9,7 +9,6 @@ tags:
   - Jekyll  
   - LaTeX
   - Kalman
-use_math: true
 ---
 # 수학식 표기의 예
 
