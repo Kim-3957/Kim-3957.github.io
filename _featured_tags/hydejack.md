@@ -1,8 +1,8 @@
 ---
-layout: category
-title: category
+layout: post
+title: post
 menu: true
 order: 2
 description: >
-  Lets try category
+  Lets try post
 ---
