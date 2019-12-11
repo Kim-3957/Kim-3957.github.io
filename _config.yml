@@ -27,10 +27,14 @@ title:                 Kim's Kitchen
 # A short description (~150 chars) of the page used for the meta description tag.
 # Can use markdown, but no more than one paragraph (enforced by `>`)
 description:           >
-What is truth
+  A Jekyll theme with JavaScript powers. "Best Theme by a Mile".
+  Combines the best of static sites and modern web apps.
+  Open `_config.yml` to edit this text.
+
 # A shorter description for the sidebar.
 tagline:               >
-Safety
+  A Jekyll theme with JavaScript powers.
+  Open `_config.yml` to edit this text.
 # A list of keywords for your blog
 keywords:              [safety, robot, filtering]
 
