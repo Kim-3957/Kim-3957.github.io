@@ -1,6 +1,6 @@
 title:              Kim's Kitchen
 email:              kim.eugene@a.mbox.nagoya-u.ac.jp
-description:        A Blog Theme by Eugene  Kim
+description:        A Blog by Eugene  Kim
 author:             Eugene Kim
 baseurl:            "/"
 url:                "https://Kim-3957.github.io.github.io"
@@ -9,7 +9,7 @@ url:                "https://Kim-3957.github.io.github.io"
 twitter_username:   Kim
 github_username:    Kim-3957
 facebook_username:  b34b349
-linkedin_username:
+linkedin_username:  b34b349
 
 # Add your google-analytics ID here to activate google analytics
 google_analytics:   UA-XXXXXXXXX-X # out your google-analytics code
@@ -19,6 +19,7 @@ markdown:           kramdown
 paginate:           5
 paginate_path:      "/posts/page:num/"
 plugins:
+
   - jekyll-feed
   - jekyll-paginate
   - jekyll-sitemap ## Uncomment this line to silently generate a sitemaps.org compliant sitemap for your Jekyll site
