@@ -1,4 +1,4 @@
-I"� <h1 id="선형칼만필터-4">선형칼만필터 (4)</h1>
+I"n!<h1 id="선형칼만필터-4">선형칼만필터 (4)</h1>
 <p>칼만필터는 예측단계와 추정(업데이트) 두개의 시퀀스를 가지는 필터이다.</p>
 
 <blockquote>
@@ -145,13 +145,13 @@ H = 1이라고 했다.</p>
 의미를 밝혀적기위해, 한자로 써봣다.<br />
 왼쪽부터 오른쪽으로 읽어보자.</p>
 
-<p><img src="./img/kalman_sequence.jpg" alt="kalman_sequence" /></p>
+<p><img src="https://github.com/Kim-3957/Kim-3957.github.io/blob/master/_posts/img/kalman_sequence.jpg?raw=true" alt="kalman_sequence" /></p>
 
 <h1 id="수식정리">수식정리</h1>
 
-<p><img src="./img/kalman_equations.jpg" alt="kalman_sequence" /></p>
+<p><img src="https://github.com/Kim-3957/Kim-3957.github.io/blob/master/_posts/img/kalman_equations.jpg?raw=true" alt="kalman_sequence" /></p>
 
 <h1 id="알고리즘-정리">알고리즘 정리</h1>
 
-<p><img src="./img/algorithm.jpg" alt="kalman_algorithms" /></p>
+<p><img src="https://github.com/Kim-3957/Kim-3957.github.io/blob/master/_posts/img/algorithm.jpg?raw=true" alt="kalman_algorithms" /></p>
 :ET
