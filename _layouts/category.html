@@ -1,6 +1,16 @@
 ---
-layout: default
+layout: base
 ---
+
+<article class="page" role="article">
+  <header>
+    <h1 class="page-title">{{ page.title | default:strings.home | default:"Home" }}</h1>
+    {% include message.html text=page.description hide=page.hide_description %}
+  </header>
+{% if page.use_math %}
+  {% include mathjax_support.html %}
+{% endif %}
+  {{ content }}
 
 <div id="archives">
 {% for category in site.categories %}
