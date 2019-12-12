@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: list
 title: Blog
 slug : Blog
 menu: True
