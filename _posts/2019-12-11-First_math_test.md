@@ -1,8 +1,8 @@
 ---
+layout: post
 title: "Jekyll Github 블로그에 MathJax로 수학식 표시하기"  
 excerpt: "설정 순서등등"  
-categories:
-  - Blog
+categories: [Blog]
 tags: [Blog]
 ---
 # 수학식 표기의 예
