@@ -1,0 +1,218 @@
+I"�4<h1 id="선형칼만필터-2">선형칼만필터 (2)</h1>
+<p>칼만필터는 예측단계와 추정(업데이트) 두개의 시퀀스를 가지는 필터이다.<br />
+그런데 사실 디테일하게 이야기 하자면 할게 좀더 남았다.</p>
+
+<blockquote>
+  <ol>
+    <li>대충 이전의 데이터를 가지고 다음에 들어올 입력값을 예상해놓는다 (예측단계) <br />
+1.5 예측값의 분산의 계산 (공분간 계산단계)</li>
+    <li>입력이 들어왔다. (관측)</li>
+    <li>입력데이터와 예측데이터를 비교해서 최적의 출력값을 추정 (업데이트 단계)</li>
+  </ol>
+</blockquote>
+
+<p>이번 글에서는</p>
+
+<blockquote>
+  <p><strong>1.5 예측값의 분산의 계산 (공분간 계산단계)</strong></p>
+</blockquote>
+
+<p>에 대해서 이야기해 보겠다.</p>
+
+<h1 id="공분산이-뭔가요-먹는건가요">(공)분산이 뭔가요 먹는건가요?</h1>
+<p>보통 분산하면 뭐가 떠오르는가 ?<br />
+더쉽게 말하자면, 데이터의 산만한 정도이다.  <br />
+어떤 정밀한 기계도 측정/예측에는 반드시 오차가 따른다.  <br />
+이것은 왜냐하면 우리는 진치 (True Value) 를 알 수 없고, 불확실한 측정에 의해서 진짜값을 추정할 수 밖에 없는것이다.<br />
+즉 어떠한 <strong>노이즈가 발생한다</strong>.</p>
+
+<p>주의하라<br />
+지금 <strong>우리는 측정이 아니라 모델에 의한 예측을 하는 단계이다.</strong><br />
+칼만필터는 이것을 프로세스에 의한 노이즈 <code class="MathJax_Preview">w</code><script type="math/tex">w</script> (Process noise) 라고 하고 모델안에 집어넣는다.</p>
+
+<blockquote>
+  <p>왜 측정 오차가 아닌가요?</p>
+</blockquote>
+
+<p>지금은 측정에 관한 노이즈가 아니라 예측치에 관한 노이즈를 생각하고 있기떄문에 프로세스 노이즈이다.<br />
+프로세스 노이즈란, 간단히 말해서 우리가 만든 예측모델의 분산이다.<br />
+만약 우리가 쓰고있는 CV 모델이, 그러니까 일정 속도로 계속 움직일 것이다라는 예측이 빗나가고 많은 오차를 포함한다면, 이 <code class="MathJax_Preview">w</code><script type="math/tex">w</script>  는 큰 값을 가질것이다.</p>
+
+<pre class="MathJax_Preview"><code>x_k = \Phi_{k-1}x_{k-1} + w_{k-1}</code></pre>
+<script type="math/tex; mode=display">x_k = \Phi_{k-1}x_{k-1} + w_{k-1}</script>
+
+<p>이러면 의문이 생길것이다.</p>
+
+<blockquote>
+  <p>아니 우리가 그런 노이즈를 식안에 넣을 수 있으면 진작에 넣었지…
+모델의 정확도를 모르니까 개고생하는거 아니야..</p>
+</blockquote>
+
+<p>라고생각할 수있다.<br />
+그래서 칼만씨는 이 노이즈 <code class="MathJax_Preview">w</code><script type="math/tex">w</script> 를 가우시안 분포를 따른다고 가정을 했다.<br />
+<code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 를 방금 이야기한 프로세스 노이즈가 따르는 분산이라고 하겠다. <br />
+이걸 식으로 쓰면</p>
+
+<pre class="MathJax_Preview"><code>w_k \sim \mathcal{N}(0,Q_k)</code></pre>
+<script type="math/tex; mode=display">w_k \sim \mathcal{N}(0,Q_k)</script>
+
+<p><code class="MathJax_Preview">\mathcal{N}</code><script type="math/tex">\mathcal{N}</script> 요거는 가우시안을 따른다 라는 의미이고<br />
+(평균값,분산값) 으로 표현을 한다.</p>
+
+<p>근데 여기서 지금까지 이야기한 분산을 공분산이라고 하는 경우도 있다.<br />
+공분산은, 아까 정의한 상태공간벡터의 분산행렬이다.<br />
+여기서는 데이터의 산만한정도를 표현하는 행렬이라고만 알아두자. <br />
+먼저 피부로 느껴야한다.</p>
+
+<h1 id="그래서-분산은-어떻게-계산하는데요">그래서 분산은 어떻게 계산하는데요?</h1>
+
+<p>지금 여러분은 그것보다 분산이 3개 있다는 사실을 깨달아야한다.</p>
+
+<blockquote>
+  <p>???</p>
+</blockquote>
+
+<p>분산의 종류는 3가지다 여기서 적어놓겠다.</p>
+<ol>
+  <li>process noise (co)variance  <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script></li>
+  <li>Measurement noise (co)variance  <code class="MathJax_Preview">R</code><script type="math/tex">R</script></li>
+  <li>State (co)variance <code class="MathJax_Preview">P</code><script type="math/tex">P</script></li>
+</ol>
+
+<p>2 에대해서는 나중에 설명하겠다.<br />
+제일 중요한것은  <code class="MathJax_Preview">P</code><script type="math/tex">P</script> 이다.</p>
+
+<blockquote>
+  <p><code class="MathJax_Preview">P</code><script type="math/tex">P</script> 가 뭔데요</p>
+</blockquote>
+
+<p>우리가 추정하는것이 무엇이였는지 생각해보자.<br />
+진치, True value 를 알고싶은것이다.<br />
+그걸워해서 위에서 여러가지 모델의 식을 세워왔다.</p>
+
+<p>즉, <strong><code class="MathJax_Preview">P</code><script type="math/tex">P</script> 는 카르만 필터의 최종 추정치의 분산을 나타낸다.</strong> <br />
+즉, 우리는 <code class="MathJax_Preview">P</code><script type="math/tex">P</script> 가 최소가 되도록 우리들의 추정치와 예측치를 사용해서 최적의 추정값을 찾지 않으면 안된다.</p>
+
+<h1 id="그래서-공분산은-어떻게-계산하는데요">그래서 (공)분산은 어떻게 계산하는데요?</h1>
+
+<p>먼저 다음의 예를 생각해보자<br />
+당신은 회사를 다니는 결혼한 40대 회사원이다.<br />
+당신의 회사에는 예전부터 신경쓰이던 젊은 남녀 두 회사원이 있다.<br />
+당신은 그 둘이 혹시 사귀고 있는 것이 아닌지 예전부터 의심을 하고 있었다.
+하지만 물증이 없었다.<br />
+어느날 당신은 혼자서 영화 조커를 보러 시내에 나갔다.</p>
+
+<p>영화가 끝난후, 당신은 계속 의심을 하고 있었던 그 둘이 같이 시내를 돌아다니고 있는것을 발견했다.<br />
+그들이 사귀고 있을 확률을 그들이 같이 시내에 있었다는것을 관측하기 전과 후로 나누었을때 같을까?</p>
+
+<blockquote>
+  <p>아니 남녀 둘이 어? 시내에서 ? 어 같이 어? 빼박이지</p>
+</blockquote>
+
+<p>10에 10은 다 이렇게 생각 할 것이다.<br />
+이 이야기로부터 알 수 있는것은 관측이라는 행동은, 확률에 변화를 줄 수 있다.<br />
+베이즈 정리가 바로 이 이야기의 주인공인데, 예컨데..<br />
+관측 전과 후는 (분산) 확률분포에 영향을 준다는 이야기다.</p>
+
+<ul>
+  <li>수식을 좀 바꾸겠다.</li>
+</ul>
+
+<p>여기서는 우리들이 예측한 값을 중심으로 <code class="MathJax_Preview">P</code><script type="math/tex">P</script> 만큼 분산을 가지는 모델을 상정하고있다.<br />
+예측치는 <code class="MathJax_Preview">\hat{x}_k</code><script type="math/tex">\hat{x}_k</script> 라고 가정하겠다.</p>
+
+<blockquote>
+  <p>지금까지의 정의와 생긴게 다른데?</p>
+</blockquote>
+
+<p>위에 뭐가 씌워져있는것은 기분탓이 아니라, 실제 진치 <code class="MathJax_Preview">x_k</code><script type="math/tex">x_k</script> 와 우리가 추정 혹은 예상한 값과의 차이를 나타내기위해서 머리에 모자를 씌웠다.<br />
+그러니까 위에 뭐가있는것은 진치가 아니라 우리들의 예측/추정 한 값, 혹은 계측한 값을 나타낸다.</p>
+
+<ul>
+  <li>먼저 기대치에 대해서 생각을 해보자</li>
+</ul>
+
+<blockquote>
+  <p>기대치가 뭐임</p>
+</blockquote>
+
+<p>기대치란, 동전을 많이 던졌을때 평균값을 이야기한다.<br />
+가우스 분포에서는 최빈값, 중앙값이 또한 기대치가 되겠다.</p>
+
+<ul>
+  <li>오차에 대해서 생각을 해보자
+여기서 오차란 기대치 (예측치) 와 진치 (Treu value) 와의 오차이다.</li>
+</ul>
+
+<pre class="MathJax_Preview"><code>e = Expected(Measured) value  - Truevalue</code></pre>
+<script type="math/tex; mode=display">e = Expected(Measured) value  - Truevalue</script>
+
+<blockquote>
+  <p>아니 진치를 모르는데 오차를 어떻게 계산함?</p>
+</blockquote>
+
+<p>이런 걱정은 잠시 집어 넣고 안다고 생각하고 돌리면 다음과 같은 식이 나온다.<br />
+진치와 기대치의 오차의 식이다.</p>
+
+<pre class="MathJax_Preview"><code>\hat{x}_k(-) - x_k = \Phi_{k-1}(\hat{x}_{k-1}(+)-x_{k-1})+w_{k-1}</code></pre>
+<script type="math/tex; mode=display">\hat{x}_k(-) - x_k = \Phi_{k-1}(\hat{x}_{k-1}(+)-x_{k-1})+w_{k-1}</script>
+
+<blockquote>
+  <p>??? 플러스는 뭐고 마이너스는 뭐임?</p>
+</blockquote>
+
+<p>자 여기서부터 중요하다. 처음에 시작할때, 칼만 필터에는 크게 두가지의 시퀀스가 있다고 했다.<br />
+감이 올지는 모르겠지만, 마이너스가 붙는 <code class="MathJax_Preview">\hat{x}_k(-)</code><script type="math/tex">\hat{x}_k(-)</script> 는 어디까지나 예측에 불과하다는것이며, 뭔가 추가를 해야할 값, 즉 보정이 들어가기전단계라는 의미가 된다.<br />
+즉, 예측에서 끝이 나는게 아니고 <code class="MathJax_Preview">\hat{x}_k(+)</code><script type="math/tex">\hat{x}_k(+)</script> 까지 가야 우리가 납득할만한 추정치가 된다는 뜻이다.<br />
+다시말해서, 시간의 개념을 적용한다는 의미이며, 베이즈에서의 사전/사후 추정과 일치하는 부분이다.</p>
+
+<ul>
+  <li>대망의 공분산을 계산하는 식이다.</li>
+</ul>
+
+<p>통계에서 분산을 정의하는 방식을 떠올려볼 필요가있다.<br />
+통계학에서는 분산을 오차의 제곱의 기댓값으로 정의한다.<br />
+식으로쓰면 다음과 같다.</p>
+
+<pre class="MathJax_Preview"><code>Var[X] = E[ee^\text{T}]</code></pre>
+<script type="math/tex; mode=display">Var[X] = E[ee^\text{T}]</script>
+
+<p><code class="MathJax_Preview">X</code><script type="math/tex">X</script> 는 데이터들이고 <code class="MathJax_Preview">e=X-\mu</code><script type="math/tex">e=X-\mu</script> 를 의미한다.<br />
+그리고 다음은 실제 공분산을 계산하는 식이다.</p>
+
+<pre class="MathJax_Preview"><code>P_k = \mathbb{E}[(\hat{x}_k(-) - x_k)(\hat{x}_k(-) - x_k)^\text{T}]</code></pre>
+<script type="math/tex; mode=display">P_k = \mathbb{E}[(\hat{x}_k(-) - x_k)(\hat{x}_k(-) - x_k)^\text{T}]</script>
+
+<pre class="MathJax_Preview"><code>=\mathbb{E}[\Phi_{k-1}(\hat{x}_{k-1}(+)-x_{k-1})(\hat{x}_{k-1}(+)-x_{k-1})^\text{T}\Phi_{k-1}^\text{T} + w_{k-1}w_{k-1}^\text{T}]</code></pre>
+<script type="math/tex; mode=display">=\mathbb{E}[\Phi_{k-1}(\hat{x}_{k-1}(+)-x_{k-1})(\hat{x}_{k-1}(+)-x_{k-1})^\text{T}\Phi_{k-1}^\text{T} + w_{k-1}w_{k-1}^\text{T}]</script>
+
+<pre class="MathJax_Preview"><code>=\Phi_{k-1}P_{k-1}\Phi_{k-1}^\text{T}+Q_{k-1}</code></pre>
+<script type="math/tex; mode=display">=\Phi_{k-1}P_{k-1}\Phi_{k-1}^\text{T}+Q_{k-1}</script>
+
+<p>참고로, 노이즈들자체가 오차의 의미이기때문에 그대로 분산이 되는것도 알아두자.</p>
+
+<pre class="MathJax_Preview"><code>\mathbb{E}[w_{k-1}w_{k-1}^\text{T} =Q_{k-1}]</code></pre>
+<script type="math/tex; mode=display">\mathbb{E}[w_{k-1}w_{k-1}^\text{T} =Q_{k-1}]</script>
+
+<p>위에 다 나왔던 식이다. 한 10분만 곰곰히 생각해보자.<br />
+전치할때는 좌우가 바뀌며, 상수로 생각하면 전치행렬은 그냥 곱셉이다.<br />
+또한, <code class="MathJax_Preview">x</code><script type="math/tex">x</script> 는 독립분포를 따른다.<br />
+즉, 오차의 분산행렬을 계산할때에 공분산은 0 이된다.</p>
+
+<p>어느정도 고민했으면, 수식따위는 잊어버려라, 나중에는 잊고싶어도 잊을수없다.<br />
+중요한건 공분산 행렬이 어떻게 계산되는가이다.<br />
+쓸데없는곳에 힘빼지 말자.<br />
+우리들은 <code class="MathJax_Preview">P_k</code><script type="math/tex">P_k</script> 가 <code class="MathJax_Preview">P_{k-1}</code><script type="math/tex">P_{k-1}</script> 에대한 꼬리가 꼬리를 무는 행렬인것을 알 수있다.<br />
+<code class="MathJax_Preview">\Phi</code><script type="math/tex">\Phi</script> 에대해서는 우리는 고정으로 생각할거니까 어짜피 상수같은거다.<br />
+그러면 <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 값으로 <code class="MathJax_Preview">P_{k-1}</code><script type="math/tex">P_{k-1}</script> 를 새로운 <code class="MathJax_Preview">P_k</code><script type="math/tex">P_k</script> 값으로 갱신을 하고있는것을 알 수있다.<br />
+즉, 모델 <code class="MathJax_Preview">\Phi</code><script type="math/tex">\Phi</script>를 알고 있고, 바로전의 우리들의 추정치의 분산을 알고있으며 <code class="MathJax_Preview">P_{k-1}</code><script type="math/tex">P_{k-1}</script> 바로전의 모델예측치의 분산 <code class="MathJax_Preview">Q_{k-1}</code><script type="math/tex">Q_{k-1}</script> 를 알고있으면, <strong>예측치의 분산</strong> 을 알 수있다는 것이다.</p>
+
+<blockquote>
+  <p>? 예측치의 분산? 이라구요?</p>
+</blockquote>
+
+<p>그렇다 우리들은 예측치의 분산을 구한거다.</p>
+
+<p>따라서 위의 식은 엄밀히 말하자면 <code class="MathJax_Preview">P_k(-)</code><script type="math/tex">P_k(-)</script> 가 되겠다.<br />
+속여서 미안하다.  그래도 2/6 왔다.</p>
+:ET
