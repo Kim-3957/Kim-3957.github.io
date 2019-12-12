@@ -1,9 +1,10 @@
 ---
-layout: page
+layout: About
 title: About
 menu: true
 order: 4
 ---
+
     [Publications]
     * KIM, Eugene, Yoji YAMADA, and Shogo OKAMOTO. "電波式センサを用いた人間存在検知性能の調査.", 2016 IEEE/SICE Symposium on System Integration (SI). IEEE, 2016.
     * Kim, Eugene, Yoji Yamada, and Shogo Okamoto. "Improvement of safety integrity level by multiplexing radio wave sensors." 2017 IEEE/SICE International Symposium on System Integration (SII). IEEE, 2017.
