@@ -1,0 +1,69 @@
+I"+<h1 id="칼만필터-1">칼만필터 (1)</h1>
+<p>칼만필터는 예측단계와 추정(업데이트) 두개의 시퀀스를 가지는 필터이다.</p>
+
+<blockquote>
+  <ol>
+    <li>대충 이전의 데이터를 가지고 다음에 들어올 입력값을 예상해놓는다 (예측단계)</li>
+    <li>입력이 들어왔다. (관측)</li>
+    <li>입력데이터와 예측데이터를 비교해서 최적의 출력값을 추정 (업데이트 단계)</li>
+  </ol>
+</blockquote>
+
+<p>이 두가지이다.<br />
+그러니까, 지금까지의 디지털 필터와의 차이점이라면<br />
+저역통과, 고역통과, 밴드패스, 버터플라이 등등 여러가지 디지털 필터는 <br />
+처음부터 어느 노이즈를 캔슬링 할것이라고 설계를 할 필요가 있다<br />
+칼만필터는 이에비해, 애초부터 오차의 추정을 컨셉으로 가져가고 
+캔슬링이라기보다는 오차를 최소화하는 방향으로 필터링을 실시한다.<br />
+인터넷에서보며 가끔 너무 어렵게 설명이 되어있는거 같아서 아주간단하게 설명해보겠다.</p>
+
+<h1 id="그래서-어디다-쓰는가">그래서 어디다 쓰는가</h1>
+
+<p>인터넷에서 살펴본 결과, 칼만필터가 사용되는곳은 대충 우겨넣으면 어디든지 들어가는
+요즘 유행하는 라면으로 화장실 변기를 수리하는 정도의 .. 무튼 어디든지 사용할 수있다.
+항공우주, 자율주행, 로봇, 제어 등등 왠만한 신호처리에서는 다 쓸 수 있다.</p>
+
+<h1 id="space-state-model-ssm--뭔데그게">Space State Model (SSM) -뭔데그게</h1>
+<p>공간 상태 혹은 상태공간의 모델이라는 개념을 이해해야한다.  <br />
+별거없고 사실, 물리에서 이야기하는 위치 속도 가속도를 성분으로하는 벡터의 개념이다.<br />
+결국 미분, 혹은 적분으로 관계가 이루어지는 벡터들을 한방에 계산하고 설명하고 수식을 압축시키기 위해서 이런 방법을 쓴다.</p>
+
+<p>아주간단하게, 상태모델을 <code class="MathJax_Preview">x = [r, v]</code><script type="math/tex">x = [r, v]</script>라고 두어보자 <code class="MathJax_Preview">r</code><script type="math/tex">r</script> 은 거리고 <code class="MathJax_Preview">v</code><script type="math/tex">v</script> 는 속도라고 하자.<br />
+그리고 우리는 연속적인 세계에 살고 있지만, 디지털적인 세상에 사는 사람들을 위해서 샘플링 속도를 <code class="MathJax_Preview">dt</code><script type="math/tex">dt</script> 라고 정의를 해 두자.<br />
+여기까지는 할 수있잖아</p>
+
+<h1 id="아주-쉬운-물리문제를-통한-상태공간의-예측">아주 쉬운 물리문제를 통한 상태공간의 예측</h1>
+<p>방금전 상황에서 <code class="MathJax_Preview">dt</code><script type="math/tex">dt</script> 초 후의상황을 예측해보는 문제를 풀어보자<br />
+그러면 방금전 시간을 <code class="MathJax_Preview">k-1</code><script type="math/tex">k-1</script> 이라고 둘 필요가 있겠다.</p>
+
+<pre class="MathJax_Preview"><code>x_{k-1} = [r_{k-1}, v_{k-1}]</code></pre>
+<script type="math/tex; mode=display">x_{k-1} = [r_{k-1}, v_{k-1}]</script>
+
+<p>그러면 시간 $k$ 일때의 위치와 속도는 어떻게 예측을 할 수있을까?<br />
+일반적으로 사용되는 것은 <strong>Constant Velocity</strong> 모델이다.<br />
+무슨말이냐면 그사이 시간동안 시간은 변화하지 않고 같은 속도로 이동한다는 이야기이다.</p>
+
+<p>수학적으로 행렬의 곱셉을 이용하면 같은 속도로 이동하는 물체를 <code class="MathJax_Preview">\Phi</code><script type="math/tex">\Phi</script> 를 사용해서 한방에 나타낼 수있다.</p>
+
+<pre class="MathJax_Preview"><code>\Phi_{k} = \begin{bmatrix}
+    1 &amp; \Delta t\\
+    0 &amp; 1
+    \end{bmatrix}</code></pre>
+<script type="math/tex; mode=display">% <![CDATA[
+\Phi_{k} = \begin{bmatrix}
+    1 & \Delta t\\
+    0 & 1
+    \end{bmatrix} %]]></script>
+
+<p>그리스 문자가 나왔다고 쫄지말자<br />
+계속해서 <code class="MathJax_Preview">dt</code><script type="math/tex">dt</script> 시간후의 <code class="MathJax_Preview">x_k</code><script type="math/tex">x_k</script> 는 다음과 같이 쓸 수있을것이다.</p>
+
+<pre class="MathJax_Preview"><code>x_k = \Phi_{k-1}x_{k-1}</code></pre>
+<script type="math/tex; mode=display">x_k = \Phi_{k-1}x_{k-1}</script>
+
+<p>어떤가? 선형대수를 배운사람이라면 위의 식은 계산 할 수있을것이다.<br />
+여기서 <code class="MathJax_Preview">\Phi_{k-1}</code><script type="math/tex">\Phi_{k-1}</script> 처럼 <code class="MathJax_Preview">k</code><script type="math/tex">k</script> 에 대한 변수로 쓴것은 나도 잘 모르지만, k 에 대해서 좀더 디테일하게 모델화하는 사람이 있나보다.<br />
+그렇지만 여기에서는 <code class="MathJax_Preview">\Phi</code><script type="math/tex">\Phi</script> 는 시간에 따라 변화하지 않는 일정한 모델이라고 취급하고 다음으로 넘어가겠다.
+여기까지 하면 1/6을 한 셈이다.</p>
+
+:ET

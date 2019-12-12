@@ -1,15 +1,7 @@
 ---
-layout: About
+layout: about
 title: About
 menu: true
 order: 4
 ---
 
-    [Publications]
-    * KIM, Eugene, Yoji YAMADA, and Shogo OKAMOTO. "電波式センサを用いた人間存在検知性能の調査.", 2016 IEEE/SICE Symposium on System Integration (SI). IEEE, 2016.
-    * Kim, Eugene, Yoji Yamada, and Shogo Okamoto. "Improvement of safety integrity level by multiplexing radio wave sensors." 2017 IEEE/SICE International Symposium on System Integration (SII). IEEE, 2017.
-    * 金唯眞， 山田陽滋， 岡本正吾, "人間とロボットの協調作業における侵入の確率的リスク解析", 東海支部総会講演会講演論文集, .67, 635, 2018.  
-    * 金唯眞， 山田陽滋， 岡本正吾, "Interference Theoryを用いた保護間隔距離への人間の手の侵入確率の計算", 第36回日本ロボット学会学術講演会（RSJ2018).  
-    * 金唯眞， 山田陽滋， 岡本正吾, "電波式センサシステムを用いた人間-ロボット協調作業系での保護間隔距離の低減",  第36回日本ロボット学会学術講演会（RSJ2018).  
-    * KIM, E.; YAMADA, Y.; OKAMOTO, S. Radio Wave Sensor System Which Enables Determination of Protective Separation Distance. SIAS 2018.  
-    * Kim, E., Kirschner, R., Yamada, Y., & Okamoto, S., "Estimating probability of human hand intrusion for speed and separation monitoring using interference theory," Robotics and Computer-Integrated Manufacturing, 61, 101819 2020.
