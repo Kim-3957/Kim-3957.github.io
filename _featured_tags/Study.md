@@ -1,7 +1,7 @@
 ---
 layout: list
-title: Study
-slug : Study
+title: Kalman
+slug : Kalman
 menu: true
 order: 1
 description: >

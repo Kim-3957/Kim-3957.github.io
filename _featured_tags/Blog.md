@@ -3,7 +3,7 @@ layout: list
 title: Blog
 slug : Blog
 menu: True
-order: 2
+order: 3
 description: >
   Pretty much everything around here is 
 accent_color: '#268bd2'
