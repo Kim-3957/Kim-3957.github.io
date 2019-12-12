@@ -1,6 +1,6 @@
 ---
 layout: list
-title: tags
+title: posts
 menu: true
 order: 1
 description: >
