@@ -1,6 +1,7 @@
 ---
 layout: list
 title: posts
+slug : Kalman
 menu: true
 order: 1
 description: >
