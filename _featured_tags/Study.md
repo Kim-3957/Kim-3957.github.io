@@ -1,6 +1,6 @@
 ---
 layout: list
-title: posts
+title: Study
 slug : Kalman
 menu: true
 order: 1
