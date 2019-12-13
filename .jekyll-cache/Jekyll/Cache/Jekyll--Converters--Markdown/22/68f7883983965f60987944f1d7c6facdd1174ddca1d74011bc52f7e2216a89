@@ -1,0 +1,190 @@
+I"2�<h1 id="선형칼만필터-매트랩-코드">선형칼만필터 매트랩 코드</h1>
+
+<p>지금까지의 내용을 다 이해못해도 괜찮다.<br />
+간단한 매트랩 코드를 첨부한다.</p>
+
+<div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="n">P</span><span class="p">]</span><span class="o">=</span><span class="n">kalman_realtime</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">Sdata</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Q</span><span class="p">,</span><span class="n">R</span><span class="p">);</span>
+    <span class="c1">%%% Initialization %%%</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="n">dt</span><span class="p">;</span><span class="mi">0</span> <span class="mi">1</span><span class="p">];</span>                         <span class="c1">% State estimate matrix</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="mi">0</span><span class="p">];</span>                              <span class="c1">% Observation matrix</span>
+    <span class="c1">%%% Prediction stage%%%</span>
+    <span class="n">XPred</span> <span class="o">=</span> <span class="n">F</span><span class="o">*</span><span class="n">X</span><span class="p">;</span>                            
+    <span class="n">PPred</span> <span class="o">=</span> <span class="n">F</span><span class="o">*</span><span class="n">P</span><span class="o">*</span><span class="n">F</span><span class="o">'</span> <span class="o">+</span> <span class="n">Q</span><span class="p">;</span>
+    <span class="c1">%%% Update stage %%%</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">Sdata</span><span class="p">;</span>                              <span class="c1">% An actual measurement </span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="n">H</span><span class="o">*</span><span class="n">XPred</span> <span class="p">;</span>                       <span class="c1">% Comparion between measurement and predicted value</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">H</span><span class="o">*</span><span class="n">PPred</span><span class="o">*</span><span class="n">H</span><span class="o">'</span> <span class="o">+</span> <span class="n">R</span><span class="p">;</span>                     <span class="c1">% Covariance matrix Predict</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">PPred</span><span class="o">*</span><span class="n">H</span><span class="o">'</span><span class="p">/</span><span class="n">S</span><span class="p">;</span>                         <span class="c1">% Kalman gain update</span>
+    <span class="n">XEst</span> <span class="o">=</span> <span class="n">XPred</span> <span class="o">+</span> <span class="n">K</span><span class="o">*</span><span class="n">y</span><span class="p">;</span>                     <span class="c1">% Final estimation</span>
+    <span class="n">PEst</span> <span class="o">=</span> <span class="p">(</span><span class="nb">eye</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="n">K</span><span class="o">*</span><span class="n">H</span><span class="p">)</span><span class="o">*</span><span class="n">PPred</span><span class="p">;</span>    <span class="c1">% Covariance matrix update</span>
+    <span class="c1">%%% Update result %%%</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">XEst</span><span class="p">;</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">PEst</span><span class="p">;</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<p>c에 익숙하신 분들을 위해서 c 처럼 매트랩 코드를 변형 시켜보았다.</p>
+
+<div class="language-matlab highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span><span class="n">P</span><span class="p">]</span><span class="o">=</span><span class="n">kalman_c_realtime</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">Sdata</span><span class="p">,</span><span class="n">dt</span><span class="p">,</span><span class="n">Q</span><span class="p">,</span><span class="n">R</span><span class="p">);</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="n">dt</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="n">H</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span>
+    <span class="n">XPred</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="n">XPred</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">XPred</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">X</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">P</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+    <span class="n">PPred</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">Q</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="n">PPred</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">F</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span> <span class="o">+</span> <span class="n">Q</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+<span class="k">end</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Sdata</span> <span class="o">-</span><span class="p">(</span><span class="n">H</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">XPred</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">H</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">XPred</span><span class="p">(</span><span class="mi">2</span><span class="p">));</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">PPred</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">R</span><span class="p">;</span>
+<span class="n">K</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">PPred</span><span class="p">(</span><span class="mi">1</span><span class="p">))/</span><span class="n">s</span><span class="p">;</span>
+<span class="n">X</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="n">XPred</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">K</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">;</span>
+<span class="n">K</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">PPred</span><span class="p">(</span><span class="mi">2</span><span class="p">))/</span><span class="n">s</span><span class="p">;</span>
+<span class="n">X</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">XPred</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">K</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">y</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+<span class="n">F</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">;</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">2</span>
+    <span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="n">K</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+    <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="n">P</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">=</span> <span class="n">P</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p><em>아니 왜 <code class="MathJax_Preview">H</code><script type="math/tex">H</script> 행렬이 [1 0] 임?</em></p>
+</blockquote>
+
+<p>왜냐하면 대부분의 경우에는, 거리와 속도를 동시에 독립적으로 계측할수있는 환경이 아니기 때문이다.<br />
+제어나 다른분야는 제쳐두고, 일반적인 SLAM 이나 사람존재검출에 이용되는 센서들은 복수의 검출원리를 퓨전으로 하지않는 이상은, 즉, 단일 센서군을 이용하는 한, 실제로 계측하는것은 거리뿐일것이다.</p>
+
+<p>사실, <code class="MathJax_Preview">H</code><script type="math/tex">H</script> 를 단위행렬로 잡아도 상관은 없지만, 밑에서 설명할 공분산 행렬을 디테일하게 설정할 필요가 있어서, 경험상으로는 실제로 계측가능한 것들만 관측행렬에 집어넣는것을 추천한다.</p>
+
+<h1 id="선형칼만-필터-c-코드">선형칼만 필터 C 코드</h1>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">kalman_vel_realtime</span><span class="p">(</span><span class="kt">double</span> <span class="n">X</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="kt">double</span> <span class="n">P</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="kt">double</span> <span class="n">Sdata</span><span class="p">,</span> <span class="kt">double</span> <span class="n">dt</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="kt">double</span> <span class="n">F</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">H</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">Q</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">R</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">K</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">XPred</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="kt">double</span> <span class="n">y</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">s</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">b</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">b_F</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+  <span class="cm">/* %% Initialization %%% */</span>
+  <span class="cm">/*  State estimate matrix */</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="cm">/*  Observation matrix */</span>
+  <span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">H</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="cm">/*  Process noise covariance  */</span>
+  <span class="n">Q</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mo">0001</span><span class="p">;</span>
+  <span class="n">Q</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">Q</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">Q</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mo">01</span><span class="p">;</span>
+  <span class="cm">/*  Measurement noise covariance */</span>
+  <span class="n">R</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mo">000</span><span class="mi">9</span><span class="p">;</span>
+  <span class="cm">/* %% Prediction stage%%% */</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">XPred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+    <span class="n">XPred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">P</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="n">PPred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">PPred</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">F</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">+</span> <span class="n">Q</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="cm">/* %% Update stage %%% */</span>
+  <span class="cm">/*  Comparion between measurement and predicted value */</span>
+  <span class="n">y</span> <span class="o">=</span> <span class="n">Sdata</span> <span class="o">-</span> <span class="p">(</span><span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">XPred</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">H</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">XPred</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">R</span><span class="p">;</span>
+  <span class="cm">/*  Covariance matrix Predict */</span>
+  <span class="cm">/*  Kalman gain update */</span>
+  <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">PPred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">s</span><span class="p">;</span>
+  <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">XPred</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">;</span>
+  <span class="n">K</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">PPred</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="n">s</span><span class="p">;</span>
+  <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">XPred</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">K</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">y</span><span class="p">;</span>
+  <span class="cm">/*  Final estimation */</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="n">F</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+  <span class="cm">/*  Covariance matrix update */</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+    <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">];</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">];</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="n">P</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="n">b_F</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">PPred</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="cm">/* End of code (kalman_vel_realtime.c) */</span>
+</code></pre></div></div>
+<blockquote>
+  <p><em>c 라이브러리 안쓰냐?</em></p>
+</blockquote>
+
+<p>마이콘에 들어갈 코드이기 때문에, 대부분의 C 라이브러리가 존재하지 않는다..<br />
+일반적으로 코딩을 할때는 매트랩 코드를 참고하여 라이브러리로 콤팩트하게 만들어보도록 하자.</p>
+
+<h1 id="r-과-q-를-결정하는-방법"><code class="MathJax_Preview">R</code><script type="math/tex">R</script> 과 <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 를 결정하는 방법</h1>
+
+<p><code class="MathJax_Preview">R</code><script type="math/tex">R</script> 은 환경만 뒷받침 된다면 쉽다.<br />
+먼저 자신이 쓸려는 센서보다 정밀도가 높은 계측 장치를 준비해야한다.<br />
+예를들면 리니어 슬라이더의 엔코더라던지.</p>
+
+<p>이렇게되면, 리니어 슬라이더로 타겟을 계속 움직이면서, 그 위치의 오차를 계속 구해간다.<br />
+오차의 통계치가 어느정도 모이면, 그 오차의 표준편차를 가지고 <code class="MathJax_Preview">R</code><script type="math/tex">R</script> 의 대각성분을 대입하면 된다.</p>
+
+<pre class="MathJax_Preview"><code>R = 
+ \begin{bmatrix}
+ \hat{\sigma}_r^{2} &amp; 0\\
+ 0 &amp; \hat{\sigma}_v^{2}
+ \end{bmatrix}</code></pre>
+<script type="math/tex; mode=display">% <![CDATA[
+R = 
+ \begin{bmatrix}
+ \hat{\sigma}_r^{2} & 0\\
+ 0 & \hat{\sigma}_v^{2}
+ \end{bmatrix} %]]></script>
+
+<blockquote>
+  <p>그럼 Q 는요</p>
+</blockquote>
+
+<p>이것도 우리가 정확하게 모델 프로세싱으로인한 오차의 통계를 구할 수 있으면 좋겠지만 현실을 그리 녹록치 않다.<br />
+그래서 많은 경우, 근거가 빈약하긴 하지만, 다수의 논문들에서는 <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 또한 재귀적으로 구하는 방법을 연구하거나, 추측을 통해서 정수화 시키는 경우가 많은것 같다.<br />
+필자또한, <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 의 값을 여러가지 바꾸어 보면서 <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script>의 최적치를 튜닝하고있다.<br />
+그때에 이것만 알아두자, <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script>의 값을 크게 한다는것은, 모델의 오차가 클것이라고 값을 주는것<br />
+그리고 <code class="MathJax_Preview">Q</code><script type="math/tex">Q</script> 값을 작게 한다는것은, 모델의 오차가 크지 않기때문에, 칼만게인이 모델쪽으로 쏠리게 되면서, 결과적으로 계측치에 대한 가중치가 줄어든다는 소리가 된다.</p>
+
+<blockquote>
+  <p>우리는 센서보다 정밀도가 높은 계측장치도없고 슬라이더도 없어요</p>
+</blockquote>
+
+<p>그럼 걍 <code class="MathJax_Preview">R</code><script type="math/tex">R</script> 도 어림잡아 값을 넣어주자.<br />
+여기서부터는 개인의 감의 영역인것 같다.</p>
+:ET
