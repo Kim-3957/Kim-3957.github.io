@@ -142,7 +142,11 @@ hydejack:
   # When enabled, no user-related data will be stored until the user gives consent.
   cookies_banner:      false
 
-
+sitemap:
+  lastmod: 2019-12-25
+  priority: 1.0
+  changefreq: 'weekly'
+  exclude: 'yes'
 # Collections
 # ========================================================================================
 
